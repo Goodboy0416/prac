@@ -1,55 +1,45 @@
-contract StudentRegister{
+pragma solidity ^0.8.7;
 
-
-    address public owner;
-
-    mapping (uint256=>student)students;
-    
-  
-    constructor() public {
-        owner=msg.sender;
+contract StudentRegister {
+    struct Student {
+        string name;
+        string contactNo;
+        address id;
+        bool exists;
+    }
+    address admin;
+    int fallbackCount ;
+    constructor ()  {
+        admin = msg.sender;
+        fallbackCount = 0;
     }
 
-    modifier onlyOwner {
-        require(msg.sender==owner);
-        _;
+    mapping(address => Student) students;
+
+    function register(string memory _name, string memory _contactNo, address _id) public {
+        require(students[_id].exists == false, "Student already exists!");
+        require(msg.sender == admin, "Only admin can register");
+        students[_id].exists = true;
+        students[_id].name = _name;
+        students[_id].contactNo = _contactNo;
     }
-  
-    struct student{
+
+    function getDetails(address _id) public view returns (string memory , string memory ) {
         
-        uint256 studentId;
-        string  name;
-        string course;
-        uint256 mark1;
-        uint256 mark2;
-        uint256 mark3;
-        uint256 totalMarks;
-        uint256 percentage;
-        bool isExist;
-        
+        require(students[_id].exists == true, "Student does not exist!");
+        return(students[_id].name, students[_id].contactNo);
     }
-    function() public payable{
-            revert("ha.. ha... Fraud Not Possible,student details already registered and cannot be altered");
+    function showFallbackCount() public view returns(int){
+        return (fallbackCount);
     }
-function register(uint256 studentId,string memory name,string memory course,uint256 mark1,uint256 mark2,uint256 mark3) public onlyOwner {
-            
-            require(students[studentId].isExist==false,"ha.. ha... Fraud Not Possible,student details already registered and cannot be altered");
+ fallback() external {
+        fallbackCount++;
+        // require(fallbackCount == 0, "fallback function called");
+    }    
+}
 
-
-            uint256 totalMarks;
-            uint256 percentage;
-            totalMarks=(mark1+mark2+mark3);
-            
-            percentage=(totalMarks/3);
-            
-            students[studentId]=student(studentId,name,course,mark1,mark2,mark3,totalMarks,percentage,true);
-    }
-    
-            
-    function getStudentDetails(uint256 studentId) public view returns (uint256,string memory,string memory,uint256,uint256){
-        return(students[studentId].studentId,students[studentId].name,students[studentId].course,students[studentId].totalMarks,students[studentId].percentage);
+contract Teacher {
+    function findTeacher(address A) public  {
+        A.call(abi.encodeWithSignature("findTeacher()"));
     }
-
-    
-
 }
