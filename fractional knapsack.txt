@@ -1,0 +1,72 @@
+/*
+struct Item{
+    int value;
+    int weight;
+};
+*/
+
+
+class Solution
+{
+    public:
+    //Function to get the maximum total value in the knapsack.
+    double fractionalKnapsack(int W, Item arr[], int n)
+    {
+        
+        double totV = 0;
+
+        double totS = 0;
+
+        priority_queue<pair<double,double>> pq;
+
+        
+
+        for(int i=0;i<n;i++){
+
+            totV+=arr[i].value;
+
+            totS+=arr[i].weight;
+
+            double tmp = (double)arr[i].value / (double)arr[i].weight;
+
+            pq.push(make_pair(tmp,arr[i].weight));
+
+        }
+
+        
+
+        if(totS <= W) return totV;
+
+        double ans = 0;
+
+        while(W>0){
+
+            if(pq.top().second <=W){
+
+                ans+= (double)pq.top().second * (double)pq.top().first;
+
+                W-=pq.top().second;
+
+                pq.pop();
+
+            }
+
+            else{
+
+                ans+= (double)pq.top().first * (double)W;
+
+                W-=W;
+
+                pq.pop();
+
+            }
+
+        }
+
+        
+
+        return ans;
+        
+    }
+        
+};
